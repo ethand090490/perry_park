@@ -1,28 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Perry Park Golf App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Perry Park Golf App</title>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+body { margin:0; font-family:Arial; background:#f4f7f1;}
+.app { padding:20px;}
+button { padding:8px 12px; margin:5px; border-radius:8px; border:none; background:#047857; color:white;}
+button.secondary { background:#ddd; color:#000;}
+.card { background:white; padding:15px; border-radius:15px; margin-bottom:15px;}
+input, select { padding:6px; border-radius:6px; border:1px solid #ccc;}
+.grid { display:grid; gap:15px;}
+</style>
 </head>
+
 <body>
-  <div id="root"></div>
+<div id="root"></div>
 
-  <script type="text/babel">
-    function App() {
-      return (
-        <div style={{padding: 20}}>
-          <h1>Perry Park Golf App</h1>
-          <p>If you see this, it's working.</p>
-        </div>
-      );
-    }
+<script type="text/babel">
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+const players = [
+"James","Brett","Jesse","Paul","Max","Mikey",
+"Opie","Ethan D","E2","Derek","John","Jordan"
+];
+
+function App(){
+
+const [isAdmin,setIsAdmin] = React.useState(false);
+const [entryFee,setEntryFee] = React.useState(35);
+const [scores,setScores] = React.useState({});
+const [groups,setGroups] = React.useState(["","",""]);
+
+const totalPot = players.length * entryFee;
+
+const payouts = React.useMemo(()=>{
+  return players.map(p=>({
+    name:p,
+    amount:Math.floor(Math.random()*20) // placeholder
+  })).sort((a,b)=>b.amount-a.amount);
+},[scores,entryFee]);
+
+return (
+<div className="app">
+
+<div className="card">
+<h2>Perry Park Golf Trip</h2>
+
+<button onClick={()=>setIsAdmin(true)}>Admin</button>
+<button className="secondary" onClick={()=>setIsAdmin(false)}>Viewer</button>
+
+<div>
+Entry Fee: 
+<input 
+type="number" 
+value={entryFee}
+onChange={(e)=>setEntryFee(Number(e.target.value))}
+/>
+</div>
+
+<div>Total Pot: ${totalPot}</div>
+</div>
+
+<div className="grid">
+
+<div className="card">
+<h3>Groups</h3>
+{groups.map((g,i)=>(
+<div key={i}>
+<input 
+disabled={!isAdmin}
+placeholder={"Group "+(i+1)}
+value={g}
+onChange={(e)=>{
+const newG=[...groups];
+newG[i]=e.target.value;
+setGroups(newG);
+}}
+/>
+</div>
+))}
+</div>
+
+<div className="card">
+<h3>Scores</h3>
+{players.map(p=>(
+<div key={p}>
+<span>{p}</span>
+<input 
+disabled={!isAdmin}
+type="number"
+onChange={(e)=>{
+setScores({...scores,[p]:e.target.value})
+}}
+/>
+</div>
+))}
+</div>
+
+<div className="card">
+<h3>Payouts</h3>
+{payouts.map(p=>(
+<div key={p.name}>
+{p.name}: ${p.amount}
+</div>
+))}
+</div>
+
+</div>
+
+</div>
+);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+
+</script>
 </body>
 </html>
