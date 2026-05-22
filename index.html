@@ -113,9 +113,15 @@ function fill(){
     const usedPairs = new Set();
 
     const fri = makeFourManTeams(usedPairs);
-    const sat1 = makePairs(usedPairs);
-    const sat2 = makePairs(usedPairs);
-    const sat3 = makePairs(usedPairs);
+
+    // Saturday AM should stay inside normal golf foursomes.
+    // Build 3 balanced foursomes, then rotate partners inside each foursome:
+    // A+B vs C+D, A+C vs B+D, A+D vs B+C.
+    const satAmFoursomes = makeFourManTeams(usedPairs);
+    const sat1 = satAmFoursomes.flatMap(g => [[g[0], g[1]], [g[2], g[3]]]);
+    const sat2 = satAmFoursomes.flatMap(g => [[g[0], g[2]], [g[1], g[3]]]);
+    const sat3 = satAmFoursomes.flatMap(g => [[g[0], g[3]], [g[1], g[2]]]);
+
     const satpm = makeFourManTeams(usedPairs);
     const sun = makeFourManTeams(usedPairs);
 
